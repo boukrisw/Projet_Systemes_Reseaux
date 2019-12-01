@@ -9,39 +9,56 @@
 
 #define MAXLINE 256
 
+
+void Free(struct trajet t){
+      free(t.depart);
+      free(t.arrivee);
+      free(t.heurdepart);
+      free(t.heurarrivee);
+      free(t.promo);
+
+}
+
 struct trajet readtrajet(char *line){
-    struct trajet res;
+        struct trajet res;
 
-    res.num = atoi(strtok(line,";"));
+        char * s = malloc(sizeof(char)*8);
+        strcpy(s, strtok(line,";"));
+        if(strcmp(s,"X")==0){
+          res.num = -1;
+        }else{
+          res.num = atoi(s);
+          //printf("res.num  *%d*\n", res.num);
+        }
 
-    res.depart = malloc(sizeof(char)*30);
-    strcpy(res.depart, strtok(NULL,";"));
+        res.depart = malloc(sizeof(char)*30);
+        strcpy(res.depart, strtok(NULL,";"));
 
-    res.arrivee = malloc(sizeof(char)*30);
-    strcpy(res.arrivee, strtok(NULL,";"));
+        res.arrivee = malloc(sizeof(char)*30);
+        strcpy(res.arrivee, strtok(NULL,";"));
 
-    res.heurdepart = malloc(sizeof(char)*6);
-    strcpy(res.heurdepart, strtok(NULL,";"));
+        res.heurdepart = malloc(sizeof(char)*6);
+        strcpy(res.heurdepart, strtok(NULL,";"));
 
-    res.heurarrivee = malloc(sizeof(char)*6);
-    strcpy(res.heurarrivee, strtok(NULL,";"));
+        res.heurarrivee = malloc(sizeof(char)*6);
+        strcpy(res.heurarrivee, strtok(NULL,";"));
 
-    sscanf((strtok(NULL,";")),"%lf",&res.prix);
+        strcpy(s, strtok(NULL,";"));
+        if(strcmp(s,"X")==0){
+          res.prix = -1.0;
+        }else{
+          sscanf(s,"%lf",&res.prix);
+        }
+        free(s);
+        res.promo = malloc(sizeof(char)*6);
+        strcpy(res.promo, strtok(NULL,";"));
+        res.promo[5]=0;
 
-
-    res.promo = malloc(sizeof(char)*10);
-    strcpy(res.promo, strtok(NULL,";"));
-//  printf("promo: %s\n", res.promo);
-
-    return res;
+        return res;
 }
 
 char * toString(struct trajet t){
       char * res =malloc(sizeof(char)*50);
-/*
-      char str[ENOUGH];
-      sprintf(str, "%d", 42);
-  */  //  strcpy(res,(char *)t.num);
 
       sprintf(res, "%d", t.num);
       strcat(res," ");
@@ -61,10 +78,8 @@ char * toString(struct trajet t){
 
       strcat(res,s);
       strcat(res," ");
-    //  strcat(res,(char *)t.prix);
+
       strcat(res,t.promo);
-
-
       return res;
 }
 
@@ -72,42 +87,44 @@ char * toString(struct trajet t){
 int comparer(struct trajet t1,struct trajet t2){
 
     if(t1.num>0){
-      //printf("NUM\n");
+      //printf("NUM  : *%d*  diff *%d*\n",t1.num ,t2.num );
       if(t1.num != t2.num) return 0;
     }
 
     if(strcmp(t1.depart,"X")!=0){
 
-      //printf("DEPART");
+      //printf("depart  *%s* diff *%s* \n",t1.depart,t2.depart);
       if(strcmp(t1.depart,t2.depart)!=0) return 0;
     }
 
     if(strcmp(t1.arrivee,"X")!=0){
-      //printf("ARRIVEE");
+      //printf("arrivee  *%s* diff *%s* \n",t1.arrivee,t2.arrivee);
       if(strcmp(t1.arrivee,t2.arrivee)!=0) return 0;
     }
     if(strcmp(t1.heurdepart,"X")!=0){
-      //printf("HEURDEPART");
+      //printf("heurdepart  *%s* diff *%s* \n",t1.heurdepart,t2.heurdepart);
       if(strcmp(t1.heurdepart,t2.heurdepart)!=0) return 0;
     }
     if(strcmp(t1.heurarrivee,"X")!=0){
-      //printf("HEUREARRIVE");
+      //printf("HEUREARRIVE  *%s* diff *%s* \n",t1.heurarrivee,t2.heurarrivee);
       if(strcmp(t1.heurarrivee,t2.heurarrivee)!=0) return 0;
     }
 
-    if(strcmp(t1.promo,"X\n")!=0){
-      /*printf("PROMO  *%s* diff *%s* \n",t1.promo,t2.promo);
-      */if(strcmp(t1.promo,t2.promo)!=0) return 0;
-    }
-
-    if(t1.prix <= 0.0){
-      //printf("priX %f",t1.prix);
+    if(t1.prix > 0.0){
+      //printf("Prix  %f  diff %f\n",t1.prix,t2.prix);
       if(t1.prix != t2.prix) return 0;
     }
-  //  printf("*******************THE SAME*************************************");
+
+    printf("PROMOoooooooo  *%s*\n",t1.promo);
+
+
+    if(strcmp(t1.promo,"REDUC")==0 | strcmp(t1.promo,"SUPPL")==0){
+      printf("PROMO  *%s* diff *%s* \n",t1.promo,t2.promo);
+
+      if(strcmp(t1.promo,t2.promo)!=0 ) return 0;
+    }
 
     return 1;
-
 }
 
 
@@ -133,22 +150,6 @@ int main(int argc, char **argv){
         i++;
     }
     int longeur =i;
-    /*i=0;
-
-    while(i<longeur){
-        printf("*********************%d*****************************\n",i);
-        printf("numero  %d: %d\n",i, tab[i].num);
-        printf("depart %d: %s\n",i, tab[i].depart);
-        printf("arrivee %d: %s\n",i, tab[i].arrivee);
-        printf("heurdepart %d: %s\n",i, tab[i].heurdepart);
-        printf("prix %d: %f\n",i, tab[i].prix);
-        printf("prix %d: %s***\n",i, tab[i].promo);
-        i++;
-    }
-    printf("**************************************************");
-*/
-    //creation Serveur!
-
     i=0;
     int port;
 
@@ -208,7 +209,6 @@ int main(int argc, char **argv){
 
         if(fork()==0){
           while (1) {
-            /* code */
             char *buf;
             int i = 0;
             buf = malloc(MAXLINE * sizeof(char));
@@ -216,21 +216,10 @@ int main(int argc, char **argv){
             //Recuperation de trajet demande
             i=recv(acc, buf,MAXLINE, 0);
 
-          //  printf("*%s", buf);
             struct trajet t ;
             t = readtrajet(buf);
-/*
-            printf(">>>>>>>>>> DEBUT <<<<<<<<<<<<\n");
-            printf("numero  :%d*\n", t.num);
-            printf("depart : %s*\n", t.depart);
-            printf("arrivee  : %s*\n", t.arrivee);
-            printf("heurdepart  : %s*\n", t.heurdepart);
-            printf("heurarrivee  : %s*\n", t.heurarrivee);
-            printf("prix  : %f*\n", t.prix);
-            printf("promo  : %s*\n", t.promo);
-            printf(">>>>>>>>>> FIN <<<<<<<<<<<<\n");
-*/
-        //  Recherche des trajets correspondants
+
+            //  Recherche des trajets correspondants
             struct trajet  tabtemp[longeur+1];
             i=0;
             int index=0;
@@ -242,19 +231,11 @@ int main(int argc, char **argv){
                 }
                 i++;
             }
-            //tabtemp[index]=NULL;
-
-            //printf("iiiiii %d\n",i);
-            printf("Index  %d\n",index);
 
             char * res=malloc(sizeof(char)*MAXLINE);
             i=0;
             while(i<index){
-          //    printf("whileeeeeee\n");
-
                 if(i==0){
-                  //printf(">>>>>>>>>> strcopy<<<<<<<<<<<<\n");
-
                   strcpy(res,toString(tabtemp[i]));
                   strcat(res,"\n");
                 }else{
@@ -264,19 +245,13 @@ int main(int argc, char **argv){
                 i++;
             }
 
-          //  strcpy(c,"recieveeee!\n");
-            printf("Res %s \n",res);
-            res[strlen(res)-1]=0;
-            send(acc, res, strlen(res),0);
-          //  printf(">>>>>>>>>> FIN <<<<<<<<<<<<\n");
-
-            /*if ((i=recv(acc, buf,MAXLINE, 0)) < 0)
-            {
-              printf("NNNNNNNNN");
+            if(index==0){
+                res="Pas de resultats";
+            }else{
+               res[strlen(res)-1]=0;
             }
-            else{
-              printf("*%s", buf);
-            }*/
+            send(acc, res, strlen(res),0);
+            Free(t);
             free(res);
             free(buf);
           }
