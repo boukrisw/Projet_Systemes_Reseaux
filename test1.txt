@@ -1,0 +1,14 @@
+X;Paris Gare de Lyon;Valence;X;X;X;X
+
+17564;X;X;X;X;X;X
+X;Valence;X;X;X;X;X
+X;X;Valence;X;X;X;X
+
+
+
+
+17525;X;X;X;X;X;X
+
+X;X;X;X;X;X;SUPPL
+
+X;X;X;X;X;17.60;X

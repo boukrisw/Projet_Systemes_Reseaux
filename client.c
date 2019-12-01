@@ -51,19 +51,37 @@ int main(int argc, char **argv){
         printf("connect successfully created..\n");
     }
 
+    printf("Entrer vos caracteristique de train sous la forme :\n");
+    printf("Numero;VilleDepart;VileArrivee;HeureDepart;HeureArrivee;Prix;Prom\n");
+    printf("si vous ne voulez pas remplir un champ mettez X!\n");
+
     while (1) {
       char *buff=malloc(sizeof(char)*MAXLINE);
+      printf("\n\n*******************************************************\n" );
       fgets(buff,sizeof(char)*100,stdin);
-      if(strlen( buff)> 0)
+      while((strcmp(buff,"\n")==0)){
+        fgets(buff,sizeof(char)*100,stdin);
+      }
+      if(strlen(buff)> 0)
       {
         //printf("buf = %s \n", buff);
         send(sock, buff, strlen(buff),0);
+        char * buffReseau=malloc(sizeof(char)*MAXLINE);
 
-        char *buffReseau=NULL;
-        buffReseau=malloc(sizeof(char)*MAXLINE);
-        recv(sock, buffReseau,MAXLINE, 0);
+        recv(sock, buffReseau,MAXLINE*10, 0);
 
-        printf("buffReseau = %s\n", buffReseau);
+        printf("\n*********Voici nos resultats**************\n\n" );
+
+        int i=0;
+        while (buffReseau[i]!=0) {
+
+          printf("%c", buffReseau[i]);
+          buffReseau[i]=0;
+          i++;
+          /* code */
+        }
+        //printf("buffReseau : \n%s", buffReseau);
+        //buffReseau[]
         free(buffReseau);
       }
       free(buff);

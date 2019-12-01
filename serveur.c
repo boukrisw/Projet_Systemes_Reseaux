@@ -36,6 +36,81 @@ struct trajet readtrajet(char *line){
     return res;
 }
 
+char * toString(struct trajet t){
+      char * res =malloc(sizeof(char)*50);
+/*
+      char str[ENOUGH];
+      sprintf(str, "%d", 42);
+  */  //  strcpy(res,(char *)t.num);
+
+      sprintf(res, "%d", t.num);
+      strcat(res," ");
+      strcat(res,t.depart);
+      strcat(res," ");
+      strcat(res,t.arrivee);
+
+      strcat(res," ");
+      strcat(res,t.heurdepart);
+
+      strcat(res," ");
+      strcat(res,t.heurarrivee);
+
+      strcat(res," ");
+      char *s=malloc(sizeof(char)*5);
+      sprintf(s, "%.2f", t.prix);
+
+      strcat(res,s);
+      strcat(res," ");
+    //  strcat(res,(char *)t.prix);
+      strcat(res,t.promo);
+
+
+      return res;
+}
+
+
+int comparer(struct trajet t1,struct trajet t2){
+
+    if(t1.num>0){
+      //printf("NUM\n");
+      if(t1.num != t2.num) return 0;
+    }
+
+    if(strcmp(t1.depart,"X")!=0){
+
+      //printf("DEPART");
+      if(strcmp(t1.depart,t2.depart)!=0) return 0;
+    }
+
+    if(strcmp(t1.arrivee,"X")!=0){
+      //printf("ARRIVEE");
+      if(strcmp(t1.arrivee,t2.arrivee)!=0) return 0;
+    }
+    if(strcmp(t1.heurdepart,"X")!=0){
+      //printf("HEURDEPART");
+      if(strcmp(t1.heurdepart,t2.heurdepart)!=0) return 0;
+    }
+    if(strcmp(t1.heurarrivee,"X")!=0){
+      //printf("HEUREARRIVE");
+      if(strcmp(t1.heurarrivee,t2.heurarrivee)!=0) return 0;
+    }
+
+    if(strcmp(t1.promo,"X\n")!=0){
+      /*printf("PROMO  *%s* diff *%s* \n",t1.promo,t2.promo);
+      */if(strcmp(t1.promo,t2.promo)!=0) return 0;
+    }
+
+    if(t1.prix <= 0.0){
+      //printf("priX %f",t1.prix);
+      if(t1.prix != t2.prix) return 0;
+    }
+  //  printf("*******************THE SAME*************************************");
+
+    return 1;
+
+}
+
+
 int main(int argc, char **argv){
 
 
@@ -58,7 +133,7 @@ int main(int argc, char **argv){
         i++;
     }
     int longeur =i;
-    i=0;
+    /*i=0;
 
     while(i<longeur){
         printf("*********************%d*****************************\n",i);
@@ -71,7 +146,7 @@ int main(int argc, char **argv){
         i++;
     }
     printf("**************************************************");
-
+*/
     //creation Serveur!
 
     i=0;
@@ -141,11 +216,10 @@ int main(int argc, char **argv){
             //Recuperation de trajet demande
             i=recv(acc, buf,MAXLINE, 0);
 
-            printf("*%s", buf);
-            buf[strlen(buf)-1]=0;
+          //  printf("*%s", buf);
             struct trajet t ;
             t = readtrajet(buf);
-
+/*
             printf(">>>>>>>>>> DEBUT <<<<<<<<<<<<\n");
             printf("numero  :%d*\n", t.num);
             printf("depart : %s*\n", t.depart);
@@ -155,18 +229,47 @@ int main(int argc, char **argv){
             printf("prix  : %f*\n", t.prix);
             printf("promo  : %s*\n", t.promo);
             printf(">>>>>>>>>> FIN <<<<<<<<<<<<\n");
-
-/*          Recherche des trajets correspondants
-            struct trajet  tabtemp[longeur];
+*/
+        //  Recherche des trajets correspondants
+            struct trajet  tabtemp[longeur+1];
             i=0;
+            int index=0;
             while(i<longeur){
-                if(t.num)
+                int same = comparer(t,tab[i]);
+                if(same){
+                  tabtemp[index] = tab[i];
+                  index++;
+                }
                 i++;
             }
-*/
-            char * c=malloc(sizeof(char)*MAXLINE);
-            strcpy(c,"recieveeee!\n");
-            send(acc, c, strlen(c),0);
+            //tabtemp[index]=NULL;
+
+            //printf("iiiiii %d\n",i);
+            printf("Index  %d\n",index);
+
+            char * res=malloc(sizeof(char)*MAXLINE);
+            i=0;
+            while(i<index){
+          //    printf("whileeeeeee\n");
+
+                if(i==0){
+                  //printf(">>>>>>>>>> strcopy<<<<<<<<<<<<\n");
+
+                  strcpy(res,toString(tabtemp[i]));
+                  strcat(res,"\n");
+                }else{
+                  strcat(res,toString(tabtemp[i]));
+                  strcat(res,"\n");
+                }
+                i++;
+            }
+
+          //  strcpy(c,"recieveeee!\n");
+            printf("Res %s \n",res);
+            res[strlen(res)-1]=0;
+            send(acc, res, strlen(res),0);
+          //  printf(">>>>>>>>>> FIN <<<<<<<<<<<<\n");
+
             /*if ((i=recv(acc, buf,MAXLINE, 0)) < 0)
             {
               printf("NNNNNNNNN");
@@ -174,6 +277,7 @@ int main(int argc, char **argv){
             else{
               printf("*%s", buf);
             }*/
+            free(res);
             free(buf);
           }
         }else{
