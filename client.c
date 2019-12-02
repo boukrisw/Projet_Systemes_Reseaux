@@ -64,7 +64,6 @@ int main(int argc, char **argv){
       }
       if(strlen(buff)> 0)
       {
-        //printf("buf = %s \n", buff);
         send(sock, buff, strlen(buff),0);
         char * buffReseau=malloc(sizeof(char)*MAXLINE);
 
@@ -78,10 +77,7 @@ int main(int argc, char **argv){
           printf("%c", buffReseau[i]);
           buffReseau[i]=0;
           i++;
-          /* code */
         }
-        //printf("buffReseau : \n%s", buffReseau);
-        //buffReseau[]
         free(buffReseau);
       }
       free(buff);

@@ -16,7 +16,6 @@ void Free(struct trajet t){
       free(t.heurdepart);
       free(t.heurarrivee);
       free(t.promo);
-
 }
 
 struct trajet readtrajet(char *line){
@@ -28,7 +27,6 @@ struct trajet readtrajet(char *line){
           res.num = -1;
         }else{
           res.num = atoi(s);
-          //printf("res.num  *%d*\n", res.num);
         }
 
         res.depart = malloc(sizeof(char)*30);
@@ -50,9 +48,19 @@ struct trajet readtrajet(char *line){
           sscanf(s,"%lf",&res.prix);
         }
         free(s);
+
         res.promo = malloc(sizeof(char)*6);
         strcpy(res.promo, strtok(NULL,";"));
-        res.promo[5]=0;
+        char cmp[2];
+        cmp[0]=res.promo[0];
+        cmp[1]=0;
+        if(strcmp(cmp,"\n")==0){
+          res.promo[0]=0;
+        }if(strcmp(cmp,"X")==0){
+          res.promo[1]=0;
+        }else{
+          res.promo[5]=0;
+        }
 
         return res;
 }
@@ -62,20 +70,21 @@ char * toString(struct trajet t){
 
       sprintf(res, "%d", t.num);
       strcat(res," ");
+
       strcat(res,t.depart);
       strcat(res," ");
+
       strcat(res,t.arrivee);
-
       strcat(res," ");
+
       strcat(res,t.heurdepart);
-
       strcat(res," ");
+
       strcat(res,t.heurarrivee);
-
       strcat(res," ");
+
       char *s=malloc(sizeof(char)*5);
       sprintf(s, "%.2f", t.prix);
-
       strcat(res,s);
       strcat(res," ");
 
@@ -87,40 +96,28 @@ char * toString(struct trajet t){
 int comparer(struct trajet t1,struct trajet t2){
 
     if(t1.num>0){
-      //printf("NUM  : *%d*  diff *%d*\n",t1.num ,t2.num );
       if(t1.num != t2.num) return 0;
     }
 
     if(strcmp(t1.depart,"X")!=0){
-
-      //printf("depart  *%s* diff *%s* \n",t1.depart,t2.depart);
       if(strcmp(t1.depart,t2.depart)!=0) return 0;
     }
 
     if(strcmp(t1.arrivee,"X")!=0){
-      //printf("arrivee  *%s* diff *%s* \n",t1.arrivee,t2.arrivee);
       if(strcmp(t1.arrivee,t2.arrivee)!=0) return 0;
     }
     if(strcmp(t1.heurdepart,"X")!=0){
-      //printf("heurdepart  *%s* diff *%s* \n",t1.heurdepart,t2.heurdepart);
       if(strcmp(t1.heurdepart,t2.heurdepart)!=0) return 0;
     }
     if(strcmp(t1.heurarrivee,"X")!=0){
-      //printf("HEUREARRIVE  *%s* diff *%s* \n",t1.heurarrivee,t2.heurarrivee);
       if(strcmp(t1.heurarrivee,t2.heurarrivee)!=0) return 0;
     }
 
     if(t1.prix > 0.0){
-      //printf("Prix  %f  diff %f\n",t1.prix,t2.prix);
       if(t1.prix != t2.prix) return 0;
     }
 
-    printf("PROMOoooooooo  *%s*\n",t1.promo);
-
-
     if(strcmp(t1.promo,"REDUC")==0 | strcmp(t1.promo,"SUPPL")==0){
-      printf("PROMO  *%s* diff *%s* \n",t1.promo,t2.promo);
-
       if(strcmp(t1.promo,t2.promo)!=0 ) return 0;
     }
 
@@ -129,8 +126,6 @@ int comparer(struct trajet t1,struct trajet t2){
 
 
 int main(int argc, char **argv){
-
-
     //Stockage de données dans un tableau!
 
     FILE * fd = fopen("./test.txt","r");
@@ -150,6 +145,7 @@ int main(int argc, char **argv){
         i++;
     }
     int longeur =i;
+
     i=0;
     int port;
 
@@ -187,15 +183,13 @@ int main(int argc, char **argv){
         printf("bind successfully created..\n");
     }
 
-  int list =  listen(sock, 1);
+    int list =  listen(sock, 1);
     if (list <0) {
         printf("listen creation failed...\n");
         exit(0);
     }else{
         printf("listen successfully created..\n");
     }
-
-
 
     while (1) {
         int acc = accept(sock, (struct sockaddr *) &Sclient, &Sclientlen);
