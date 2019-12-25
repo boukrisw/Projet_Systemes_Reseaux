@@ -1,3 +1,13 @@
+/*
+ *Authors:
+ ********DIALLO Mariama**************
+ ********KABAD Soufiane**************
+ ********BOUKRIS WALID***************
+ ********SOW OUSMANE*****************
+ **Projet Système/Réseaux: L3 MIAGE**
+ *************2019-2020**************
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include <netdb.h>
@@ -11,6 +21,7 @@ int main(int argc, char **argv){
     int port;
     char *host;
 
+    //Verification de nombres d'arguments
     if (argc != 3) {
         fprintf(stderr, "usage: %s <host> <port>\n", argv[0]);
         exit(0);
@@ -22,7 +33,7 @@ int main(int argc, char **argv){
     struct sockaddr_in s;
     struct hostent * h;
 
-
+    //Creation de socket
     int sock = socket(AF_INET, SOCK_STREAM, 0);
 
     if (sock == -1) {
@@ -36,12 +47,16 @@ int main(int argc, char **argv){
     h = gethostbyname(host);
 
 
+
+    //Remplissage de struct sockaddr_in s
     s.sin_family = AF_INET;
-    s.sin_addr.s_addr = htonl(INADDR_ANY);
+    s.sin_addr = *(struct in_addr *) h->h_addr;
     s.sin_port = htons(port);
 
+    //Recuperation de la longeur de struct sockaddr_in s
     socklen_t slen = (socklen_t)sizeof(s);
 
+    //Creation de connect
     int con = connect(sock, (struct sockaddr *) &s, slen);
 
     if (con == -1) {
@@ -52,28 +67,38 @@ int main(int argc, char **argv){
     }
 
     printf("Entrer vos caracteristique de train sous la forme :\n");
-    printf("Numero;VilleDepart;VileArrivee;HeureDepart;HeureArrivee;Prix;Prom\n");
+    printf("Numero;VilleDepart;VileArrivee;HeureDepartMin;HeureDepartMax;Prix;Promo\n");
     printf("si vous ne voulez pas remplir un champ mettez X!\n");
 
     while (1) {
       char *buff=malloc(sizeof(char)*MAXLINE);
       printf("\n\n*******************************************************\n" );
+      //Stockage de la requet de client dans buff
       fgets(buff,sizeof(char)*100,stdin);
       while((strcmp(buff,"\n")==0)){
         fgets(buff,sizeof(char)*100,stdin);
       }
       if(strlen(buff)> 0)
       {
+        //Envoie de requet de client
         send(sock, buff, strlen(buff),0);
         char * buffReseau=malloc(sizeof(char)*MAXLINE);
 
+
+        printf("\n*********voulez-vous que ça soit trier par rapport au prix(p)/dure(d)**************\n\n" );
+        //Stockage de choix de tri prix ou duree ou rien
+        fgets(buff,sizeof(char)*100,stdin);
+        send(sock, buff, strlen(buff),0);
+        //Receptions des resultats
         recv(sock, buffReseau,MAXLINE*10, 0);
+
 
         printf("\n*********Voici nos resultats**************\n\n" );
 
-        int i=0;
-        while (buffReseau[i]!=0) {
 
+        int i=0;
+        //Affichage des resultats!
+        while (buffReseau[i]!=0) {
           printf("%c", buffReseau[i]);
           buffReseau[i]=0;
           i++;

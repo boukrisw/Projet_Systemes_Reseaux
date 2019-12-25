@@ -1,8 +1,10 @@
 /*
  *Authors:
+ ********DIALLO Mariama**************
+ ********KABAD Soufiane**************
  ********BOUKRIS WALID***************
  ********SOW OUSMANE*****************
- ********Mini-shell: L3 MIAGE********
+ **Projet Système/Réseaux: L3 MIAGE**
  *************2019-2020**************
  */
 
@@ -10,15 +12,11 @@
 #define __TRAJET_H
 
 /***************************************************************************
-********Cree une Structure cmdline a partir de com**************************
+********Cree une Structure cmdline a partir de line*************************
 ****************************************************************************/
-struct trajet readtrajet(char *line);
+struct trajet trajet(char *line);
 
-//typedef struct Listetrajets Listetrajets;
-//typedef struct trajet trajet;
-
-
-/* Structure returned by readcmd() */
+/* Structure returned by trajet() */
 struct trajet {
 
 	int num;
@@ -29,12 +27,5 @@ struct trajet {
 	double prix;
 	char *promo;
 };
-/*
-struct Listetrajets {
-	trajet  tj;
-	Listetrajets  * ptrtj;
-};*/
-
-
 
 #endif
